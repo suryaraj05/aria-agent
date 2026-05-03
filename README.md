@@ -61,7 +61,7 @@ This creates a more robust research pipeline than a single search or single prom
 ### Component Diagram
 
 ```mermaid
-flowchart TB
+graph TB
     A[Client] -->|POST /research| B[FastAPI app]
     B --> C[ARIAAgent]
     C --> D[_plan()]
@@ -112,7 +112,7 @@ sequenceDiagram
 ### Data Flow
 
 ```mermaid
-flowchart LR
+graph LR
     Query[User query]
     SubQuestions[Sub-questions]
     Results[Search results]

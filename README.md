@@ -62,18 +62,32 @@ This creates a more robust research pipeline than a single search or single prom
 
 ```mermaid
 graph TB
-    A[Client] -->|POST /research| B[FastAPI app]
-    B --> C[ARIAAgent]
-    C --> D[_plan()]
-    C --> E[_research_loop()]
-    C --> F[_reflect()]
-    C --> G[_synthesize()]
-    E --> H[search_web()]
-    E --> I[critique_finding()]
-    H --> J[DuckDuckGo search via ddgs]
-    H --> K[Web page scrape]
-    I --> L[Google Gemini evaluation]
-    G --> M[Structured ResearchReport]
+    A[Client]
+    B[FastAPI app]
+    C[ARIAAgent]
+    D[_plan]
+    E[_research_loop]
+    F[_reflect]
+    G[_synthesize]
+    H[search_web]
+    I[critique_finding]
+    J[DuckDuckGo search]
+    K[Web scrape]
+    L[Google Gemini]
+    M[ResearchReport]
+
+    A -->|POST /research| B
+    B --> C
+    C --> D
+    C --> E
+    C --> F
+    C --> G
+    E --> H
+    E --> I
+    H --> J
+    H --> K
+    I --> L
+    G --> M
     M --> B
     B -->|JSON response| A
 ```
@@ -89,11 +103,11 @@ sequenceDiagram
     participant Gemini as Google Gemini
     participant Report
 
-    Client->>API: POST /research { query }
+    Client->>API: POST /research
     API->>Agent: run(query)
-    Agent->>Gemini: _plan() -> generate sub-questions
+    Agent->>Gemini: _plan()
     Agent->>Agent: _research_loop()
-    loop for each sub-question
+    loop Sub-questions
         Agent->>Search: search_web(question)
         Search-->>Agent: result links
         Agent->>Search: fetch_page(url)
@@ -118,7 +132,7 @@ graph LR
     Results[Search results]
     Content[Scraped page content]
     Critiques[LLM critique scores]
-    Report[Final research report]
+    Report[ResearchReport]
 
     Query --> SubQuestions --> Results --> Content --> Critiques --> Report
     Critiques --> Report

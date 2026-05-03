@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from typing import List
+from google.genai import client
 
 @dataclass
 class SearchResult:
@@ -49,3 +50,4 @@ class ResearchReport:
     confidence_score: float
     sources: List[str]
     gaps: List[str]
+

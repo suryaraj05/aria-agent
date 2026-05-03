@@ -58,6 +58,73 @@ This creates a more robust research pipeline than a single search or single prom
 - `_reflect()` scores the agent confidence
 - `_synthesize()` creates the final JSON report
 
+### Component Diagram
+
+```mermaid
+flowchart TB
+    A[Client] -->|POST /research| B[FastAPI app]
+    B --> C[ARIAAgent]
+    C --> D[_plan()]
+    C --> E[_research_loop()]
+    C --> F[_reflect()]
+    C --> G[_synthesize()]
+    E --> H[search_web()]
+    E --> I[critique_finding()]
+    H --> J[DuckDuckGo search via ddgs]
+    H --> K[Web page scrape]
+    I --> L[Google Gemini evaluation]
+    G --> M[Structured ResearchReport]
+    M --> B
+    B -->|JSON response| A
+```
+
+### Sequence Flow
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant API as FastAPI
+    participant Agent as ARIAAgent
+    participant Search as DuckDuckGo
+    participant Gemini as Google Gemini
+    participant Report
+
+    Client->>API: POST /research { query }
+    API->>Agent: run(query)
+    Agent->>Gemini: _plan() -> generate sub-questions
+    Agent->>Agent: _research_loop()
+    loop for each sub-question
+        Agent->>Search: search_web(question)
+        Search-->>Agent: result links
+        Agent->>Search: fetch_page(url)
+        Search-->>Agent: page content
+        Agent->>Gemini: critique_finding(content)
+        Gemini-->>Agent: critique JSON
+    end
+    Agent->>Agent: _reflect(memory)
+    Agent->>Gemini: _synthesize(memory)
+    Gemini-->>Agent: final report JSON
+    Agent->>Report: build ResearchReport
+    Agent->>API: return report
+    API-->>Client: 200 OK + JSON
+```
+
+### Data Flow
+
+```mermaid
+flowchart LR
+    Query[User query]
+    SubQuestions[Sub-questions]
+    Results[Search results]
+    Content[Scraped page content]
+    Critiques[LLM critique scores]
+    Report[Final research report]
+
+    Query --> SubQuestions --> Results --> Content --> Critiques --> Report
+    Critiques --> Report
+    Results --> Critiques
+```
+
 The endpoint returns a structured report like:
 ```json
 {
